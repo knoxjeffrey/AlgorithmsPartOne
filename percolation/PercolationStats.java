@@ -19,7 +19,6 @@ public class PercolationStats {
       throw new IllegalArgumentException("Illegal argument");
     }
 
-    final Percolation perc = new Percolation(n);
     int a;
     int b;
     confidence95 = 1.96;
@@ -27,6 +26,8 @@ public class PercolationStats {
     experiments = trials;
 
     for (int i = 0; i < trials; i++) {
+      final Percolation perc = new Percolation(n);
+
       while (!perc.percolates()) {
         a = StdRandom.uniform(1, n + 1);
         b = StdRandom.uniform(1, n + 1);

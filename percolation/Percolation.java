@@ -8,6 +8,7 @@ import edu.princeton.cs.algs4.WeightedQuickUnionUF;
 
 public class Percolation {
   private final WeightedQuickUnionUF percolationSystem;
+  private final WeightedQuickUnionUF percolationSystemNoBottom;
   private final int gridSize;
   private final int topSite;
   private final int bottomSite;
@@ -25,6 +26,7 @@ public class Percolation {
     openSites = 0;
     throwIfIllegal(n);
     percolationSystem = new WeightedQuickUnionUF(n * n + 2);
+    percolationSystemNoBottom = new WeightedQuickUnionUF(n * n + 1);
     topSite = n * n;
     bottomSite = topSite + 1;
     siteStatus = new boolean[n][n];
@@ -63,7 +65,7 @@ public class Percolation {
     throwIfIllegal(row);
     throwIfIllegal(col);
     final int arrayPosition = flatArrayPosition[row - 1][col - 1];
-    return percolationSystem.connected(arrayPosition, topSite);
+    return percolationSystemNoBottom.connected(arrayPosition, topSite);
   }
 
   // returns the number of open sites
@@ -90,27 +92,32 @@ public class Percolation {
 
     // union above
     if (i > 0 && siteStatus[i - 1][j]) {
+      percolationSystemNoBottom.union(arrayPosition, flatArrayPosition[i - 1][j]);
       percolationSystem.union(arrayPosition, flatArrayPosition[i - 1][j]);
     }
 
     // union below
     if (i < arrayGridSize && siteStatus[i + 1][j]) {
+      percolationSystemNoBottom.union(arrayPosition, flatArrayPosition[i + 1][j]);
       percolationSystem.union(arrayPosition, flatArrayPosition[i + 1][j]);
     }
 
     // union left
     if (j > 0 && siteStatus[i][j - 1]) {
+      percolationSystemNoBottom.union(arrayPosition, flatArrayPosition[i][j - 1]);
       percolationSystem.union(arrayPosition, flatArrayPosition[i][j - 1]);
     }
 
     // union right
     if (j < arrayGridSize && siteStatus[i][j + 1]) {
+      percolationSystemNoBottom.union(arrayPosition, flatArrayPosition[i][j + 1]);
       percolationSystem.union(arrayPosition, flatArrayPosition[i][j + 1]);
     }
   }
 
   private void connectTopBottom(int i, int arrayPosition, int arrayGridSize) {
     if (i == 0) {
+      percolationSystemNoBottom.union(arrayPosition, topSite);
       percolationSystem.union(arrayPosition, topSite);
     }
     if (i == arrayGridSize) {
