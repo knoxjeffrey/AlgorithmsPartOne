@@ -9,9 +9,9 @@ import edu.princeton.cs.algs4.StdRandom;
 import edu.princeton.cs.algs4.StdStats;
 
 public class PercolationStats {
-  private Percolation perc;
-  private double[] thresholdValues;
-  private int experiments;
+  private final double[] thresholdValues;
+  private final int experiments;
+  private final double confidence95;
 
   // perform independent trials on an n-by-n grid
   public PercolationStats(int n, int trials) {
@@ -19,17 +19,20 @@ public class PercolationStats {
       throw new IllegalArgumentException("Illegal argument");
     }
 
+    final Percolation perc = new Percolation(n);
+    int a;
+    int b;
+    confidence95 = 1.96;
     thresholdValues = new double[trials];
     experiments = trials;
 
     for (int i = 0; i < trials; i++) {
-      perc = new Percolation(n);
-      int a, b;
       while (!perc.percolates()) {
         a = StdRandom.uniform(1, n + 1);
         b = StdRandom.uniform(1, n + 1);
-        if (!perc.isOpen(a, b))
+        if (!perc.isOpen(a, b)) {
           perc.open(a, b);
+        }
       }
       thresholdValues[i] = perc.numberOfOpenSites() / (double) (n * n);
     }
@@ -47,21 +50,21 @@ public class PercolationStats {
 
   // low endpoint of 95% confidence interval
   public double confidenceLo() {
-    return mean() - ((1.96 * stddev()) / Math.sqrt(experiments));
+    return mean() - ((confidence95 * stddev()) / Math.sqrt(experiments));
   }
 
   // high endpoint of 95% confidence interval
   public double confidenceHi() {
-    return mean() + ((1.96 * stddev()) / Math.sqrt(experiments));
+    return mean() + ((confidence95 * stddev()) / Math.sqrt(experiments));
   }
 
   // test client (see below)
-  public static void main(String[] args) {
-    int n = Integer.parseInt(args[0]);
-    int t = Integer.parseInt(args[1]);
-    PercolationStats ps = new PercolationStats(n, t);
+  public static void main(final String[] args) {
+    final int n = Integer.parseInt(args[0]);
+    final int t = Integer.parseInt(args[1]);
+    final PercolationStats ps = new PercolationStats(n, t);
 
-    String confidenceInterval = "[" + ps.confidenceLo() + ", " +
+    final String confidenceInterval = "[" + ps.confidenceLo() + ", " +
       ps.confidenceHi() + "]";
     StdOut.println("mean                    = " + ps.mean());
     StdOut.println("stddev                  = " + ps.stddev());

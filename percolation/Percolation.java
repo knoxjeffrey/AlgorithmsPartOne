@@ -7,68 +7,33 @@
 import edu.princeton.cs.algs4.WeightedQuickUnionUF;
 
 public class Percolation {
-  private WeightedQuickUnionUF percolationSystem;
-  private int gridSize, topSite, bottomSite, openSites;
-  private int[][] siteStatus;
-  private int[][] flatArrayPosition;
-
-  private void throwIfIllegal(int n) {
-    if (n < 1 || n > gridSize) {
-      throw new IllegalArgumentException("Illegal argument " + n);
-    }
-  }
-
-  private void connect(int i, int j) {
-    int arrayPosition = flatArrayPosition[i][j];
-    int arrayGridSize = gridSize - 1;
-
-    if (i == 0) {
-      percolationSystem.union(arrayPosition, topSite);
-    }
-    if (i == arrayGridSize) {
-      percolationSystem.union(arrayPosition, bottomSite);
-    }
-
-    // union above
-    if (i > 0 && siteStatus[i - 1][j] == 1) {
-      percolationSystem.union(arrayPosition, flatArrayPosition[i - 1][j]);
-    }
-
-    // union below
-    if (i < arrayGridSize && siteStatus[i + 1][j] == 1) {
-      percolationSystem.union(arrayPosition, flatArrayPosition[i + 1][j]);
-    }
-
-    // union left
-    if (j > 0 && siteStatus[i][j - 1] == 1) {
-      percolationSystem.union(arrayPosition, flatArrayPosition[i][j - 1]);
-    }
-
-    // union right
-    if (j < arrayGridSize && siteStatus[i][j + 1] == 1) {
-      percolationSystem.union(arrayPosition, flatArrayPosition[i][j + 1]);
-    }
-  }
+  private final WeightedQuickUnionUF percolationSystem;
+  private final int gridSize;
+  private final int topSite;
+  private final int bottomSite;
+  private int openSites;
+  private boolean[][] siteStatus;
+  private final int[][] flatArrayPosition;
 
   /////////////////
   // Public methods
   /////////////////
 
   // creates n-by-n grid, with all sites initially blocked
-  public Percolation(int n) {
+  public Percolation(final int n) {
     gridSize = n;
     openSites = 0;
     throwIfIllegal(n);
     percolationSystem = new WeightedQuickUnionUF(n * n + 2);
     topSite = n * n;
     bottomSite = topSite + 1;
-    siteStatus = new int[n][n];
+    siteStatus = new boolean[n][n];
     flatArrayPosition = new int[n][n];
     int counter = 0;
     // all sites set as 0 initially to represent closed
     for (int i = 0; i < n; i++) {
       for (int j = 0; j < n; j++) {
-        siteStatus[i][j] = 0;
+        siteStatus[i][j] = false;
         flatArrayPosition[i][j] = counter;
         counter++;
       }
@@ -76,26 +41,28 @@ public class Percolation {
   }
 
   // opens the site (row, col) if it is not open already
-  public void open(int row, int col) {
+  public void open(final int row, final int col) {
     throwIfIllegal(row);
     throwIfIllegal(col);
-    siteStatus[row - 1][col - 1] = 1;
-    openSites++;
-    connect(row - 1, col - 1);
+    if (!isOpen(row, col)) {
+      siteStatus[row - 1][col - 1] = true;
+      openSites++;
+      connect(row - 1, col - 1);
+    }
   }
 
   // is the site (row, col) open?
-  public boolean isOpen(int row, int col) {
+  public boolean isOpen(final int row, final int col) {
     throwIfIllegal(row);
     throwIfIllegal(col);
-    return siteStatus[row - 1][col - 1] == 1;
+    return siteStatus[row - 1][col - 1];
   }
 
   // is the site (row, col) full?
-  public boolean isFull(int row, int col) {
+  public boolean isFull(final int row, final int col) {
     throwIfIllegal(row);
     throwIfIllegal(col);
-    int arrayPosition = flatArrayPosition[row - 1][col - 1];
+    final int arrayPosition = flatArrayPosition[row - 1][col - 1];
     return percolationSystem.connected(arrayPosition, topSite);
   }
 
@@ -107,5 +74,47 @@ public class Percolation {
   // does the system percolate?
   public boolean percolates() {
     return percolationSystem.connected(bottomSite, topSite);
+  }
+
+  private void throwIfIllegal(final int n) {
+    if (n <= 0 || n > gridSize) {
+      throw new IllegalArgumentException("Illegal argument " + n);
+    }
+  }
+
+  private void connect(final int i, final int j) {
+    final int arrayPosition = flatArrayPosition[i][j];
+    final int arrayGridSize = gridSize - 1;
+
+    connectTopBottom(i, arrayPosition, arrayGridSize);
+
+    // union above
+    if (i > 0 && siteStatus[i - 1][j]) {
+      percolationSystem.union(arrayPosition, flatArrayPosition[i - 1][j]);
+    }
+
+    // union below
+    if (i < arrayGridSize && siteStatus[i + 1][j]) {
+      percolationSystem.union(arrayPosition, flatArrayPosition[i + 1][j]);
+    }
+
+    // union left
+    if (j > 0 && siteStatus[i][j - 1]) {
+      percolationSystem.union(arrayPosition, flatArrayPosition[i][j - 1]);
+    }
+
+    // union right
+    if (j < arrayGridSize && siteStatus[i][j + 1]) {
+      percolationSystem.union(arrayPosition, flatArrayPosition[i][j + 1]);
+    }
+  }
+
+  private void connectTopBottom(int i, int arrayPosition, int arrayGridSize) {
+    if (i == 0) {
+      percolationSystem.union(arrayPosition, topSite);
+    }
+    if (i == arrayGridSize) {
+      percolationSystem.union(arrayPosition, bottomSite);
+    }
   }
 }
