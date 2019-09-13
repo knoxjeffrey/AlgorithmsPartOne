@@ -17,3 +17,22 @@ stddev                  = 0.016317174938689543
 ```
 
 were the mean is an estimate of the percolation threshold.
+
+### Results
+
+```
+100/100
+
+ASSESSMENT SUMMARY
+
+Compilation:  PASSED
+API:          PASSED
+
+Spotbugs:     PASSED
+PMD:          PASSED
+Checkstyle:   PASSED
+
+Correctness:  33/33 tests passed
+Memory:       8/8 tests passed
+Timing:       20/20 tests passed
+```
