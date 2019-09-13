@@ -16,10 +16,6 @@ public class Percolation {
   private boolean[][] siteStatus;
   private final int[][] flatArrayPosition;
 
-  /////////////////
-  // Public methods
-  /////////////////
-
   // creates n-by-n grid, with all sites initially blocked
   public Percolation(final int n) {
     gridSize = n;
@@ -92,26 +88,30 @@ public class Percolation {
 
     // union above
     if (i > 0 && siteStatus[i - 1][j]) {
-      percolationSystemNoBottom.union(arrayPosition, flatArrayPosition[i - 1][j]);
-      percolationSystem.union(arrayPosition, flatArrayPosition[i - 1][j]);
+      final int flatPos = flatArrayPosition[i - 1][j];
+      percolationSystemNoBottom.union(arrayPosition, flatPos);
+      percolationSystem.union(arrayPosition, flatPos);
     }
 
     // union below
     if (i < arrayGridSize && siteStatus[i + 1][j]) {
-      percolationSystemNoBottom.union(arrayPosition, flatArrayPosition[i + 1][j]);
-      percolationSystem.union(arrayPosition, flatArrayPosition[i + 1][j]);
+      final int flatPos = flatArrayPosition[i + 1][j];
+      percolationSystemNoBottom.union(arrayPosition, flatPos);
+      percolationSystem.union(arrayPosition, flatPos);
     }
 
     // union left
     if (j > 0 && siteStatus[i][j - 1]) {
-      percolationSystemNoBottom.union(arrayPosition, flatArrayPosition[i][j - 1]);
-      percolationSystem.union(arrayPosition, flatArrayPosition[i][j - 1]);
+      final int flatPos = flatArrayPosition[i][j - 1];
+      percolationSystemNoBottom.union(arrayPosition, flatPos);
+      percolationSystem.union(arrayPosition, flatPos);
     }
 
     // union right
     if (j < arrayGridSize && siteStatus[i][j + 1]) {
-      percolationSystemNoBottom.union(arrayPosition, flatArrayPosition[i][j + 1]);
-      percolationSystem.union(arrayPosition, flatArrayPosition[i][j + 1]);
+      final int flatPos = flatArrayPosition[i][j + 1];
+      percolationSystemNoBottom.union(arrayPosition, flatPos);
+      percolationSystem.union(arrayPosition, flatPos);
     }
   }
 
